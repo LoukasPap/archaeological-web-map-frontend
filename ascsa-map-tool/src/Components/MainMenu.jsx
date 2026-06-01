@@ -28,8 +28,6 @@ const MainMenu = () => {
 
   function logout() {
     localStorage.removeItem("token");
-    console.log("Logout");
-
     qc.removeQueries(["verifyToken"], { exact: false });
     navigate("/", {
       replace: true,
@@ -48,8 +46,6 @@ const MainMenu = () => {
   ];
 
   const MenuItem = ({ item }) => {
-    console.log("item", item);
-
     return (
       <IconButton
         w="full"

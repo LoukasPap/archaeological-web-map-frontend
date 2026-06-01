@@ -58,7 +58,6 @@ export async function fetchPointData(name) {
   const res = await fetch(`${BASE_URL}/findings/${name}`);
   if (!res.ok) throw new Error("Failed to fetch point with name " + name);
   const dt = await res.json();
-  console.log("Fetched point:", dt);
   return dt;
 }
 
@@ -108,7 +107,5 @@ export async function verifyToken(token) {
   });
   const payload = await res.json().catch(() => ({}));
   if (!res.ok) throw { status: res.status, payload };
-  console.log("User Verification - Payload", payload);
-
   return payload;
 }

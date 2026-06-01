@@ -98,8 +98,6 @@ const NONE = "";
 const iconExHTMLClass = ".leaflet-iconex";
 
 const MapLayer = () => {
-  console.log("[LOG] - Render Map Layer");
-
   const currentShape = useRef(null);
 
   const [filters, setFilters] = useState(emptyFiltersState);
@@ -145,30 +143,24 @@ const MapLayer = () => {
   const textSearchMutation = useMutation({
     mutationFn: () => fetchFromTextSearch(filters.textSearch),
     onSuccess: (data, variables, context) => {
-      console.log("[LOG] Success!");
       qc.setQueryData(["data"], data);
-      console.log("[LOG] Changed Query data", qc.getQueryData(["data"]));
     },
     onError: (error, variables, context) => {
       // An error happened!
-      console.log(`[LOG] Error! --> ${error}`);
+      console.log(`Error with text search: ${error}`);
     },
   });
 
   const updateCollectionMutation = useMutation({
     mutationFn: (id, values) => updateCollectionDB(id, values),
-    onMutate: () => console.log("LOG] Updating initialization"),
-    onSuccess: () => console.log("[LOG] Success updating collection."),
     onError: (error) =>
-      console.log(`[LOG] Error updating collection! --> ${error}`),
+      console.log(`Error updating collection: ${error}`),
   });
 
   const deleteCollectionMutation = useMutation({
     mutationFn: (id) => deleteCollectionDB(id),
-    onMutate: () => console.log("LOG] Deleting initialization"),
-    onSuccess: () => console.log("[LOG] Success deleting collection."),
     onError: (error) =>
-      console.log(`[LOG] Error deleting collection! --> ${error}`),
+      console.log(`Error deleting collection: ${error}`),
   });
 
   let { data } = useQuery({
@@ -217,8 +209,6 @@ const MapLayer = () => {
     }
   }, [isSuccess, collectionData]);
 
-  if (collectionLoading) console.log("LOADING COLLECTIONS");
-
   const ZoomTracker = () => {
     useMapEvents({
       zoomend: (e) => {
@@ -229,9 +219,7 @@ const MapLayer = () => {
   };
 
   function setMarkersOpacity() {
-    console.log("enters");
     if (globalMIBRef.current != null && globalMIBRef.current.length != 0) {
-      console.log("works");
       
       const selectedMarkersNames = markersInBounds.map((m) => m.Name);
       const domIconElements = document.querySelectorAll(iconExHTMLClass);
@@ -264,19 +252,14 @@ const MapLayer = () => {
   }
 
   useEffect(() => {
-    console.log("[LOG] Filters applied:", filters);
-
     (async () => {
       let updated = await runTextSearchMutation();
-
       if (updated) {
         applyClientSideFilters(updated);
       } else {
         let current = qc.getQueryData(["data"]) || data;
         applyClientSideFilters(current);
       }
-
-      console.log("[LOG] Finished updated markers in map.");
     })();
   }, [filters]);
 
@@ -392,8 +375,6 @@ const MapLayer = () => {
   }
 
   function createCollection(c) {
-    console.log("[DEBUG] - [CREATE COLLECTION] - ENTER", c);
-
     const rid = generateRandomIdUrlSafe();
     const newCollection = {
       id: rid,
@@ -405,7 +386,6 @@ const MapLayer = () => {
       isSaved: false,
       type: currentShape.current.shape,
     };
-    console.log("[DEBUG] - [CREATE COLLECTION] - newCollection", newCollection);
 
     allCollectionsRef.current = [...allCollectionsRef.current, newCollection];
     setSavedCollections((prev) => [...prev, newCollection]);
@@ -425,12 +405,9 @@ const MapLayer = () => {
 
     pushAndIncreaseTempsId(rid);
 
-    console.log("[DEBUG] - [CREATE COLLECTION] - EXIT");
   }
 
   function saveCollection(c) {
-    console.log("[DEBUG] - [SAVE COLLECTION] - ENTER", c);
-
     const savedCollection = {
       id: c.id,
       name: c.name,
@@ -451,21 +428,14 @@ const MapLayer = () => {
     savedIDS.current.push(c.id);
     removeTempId(c.id);
     setSelectedCollection(savedCollection);
-
-    console.log("[DEBUG] - [SAVE COLLECTION] - EXIT");
   }
 
   function viewCollection(c) {
-    console.log("[DEBUG] - [VIEW COLLECTION] - ENTER");
-    console.log("[DEBUG] - param 'c' is", c);
-
     if (c.shape.layer) {
       c.shape.layer.addTo(mapRef.current);
     } else {
       c.shape.addTo(mapRef.current);
     }
-    console.log("[DEBUG] - [VIEW COLLECTION] - MAP REF", mapRef.current);
-
     globalMIBRef.current = c.markers;
     isSavedInCollection.current = isCollectionSaved(c.id);
 
@@ -473,26 +443,16 @@ const MapLayer = () => {
       prev.includes(c.id) ? prev : [...prev, c.id]
     );
     setMarkersInBounds([...c.markers]);
-
-    console.log("[DEBUG] - [VIEW COLLECTION] - EXIT");
   }
 
   function hideCollection(c) {
-    console.log("[DEBUG] - [HIDE COLLECTION] - ENTER", c);
-
     removeShapeLayer(c);
-
     currentShape.current = null;
     globalMIBRef.current = [];
-
-    console.log("visibelCollections", visibleCollections);
-
     setVisibleCollections((prev) => prev.filter((id) => id !== c.id));
-
     toggleMarkersCard("");
     setMarkersInBounds([]);
     setOpacityOfDOMMarkers(1);
-    console.log("[DEBUG] - [HIDE COLLECTION] - EXIT");
   }
 
   async function updateCollection(c) {

@@ -19,10 +19,6 @@ const eraToColor = {
   Unknown: "#111111",
 };
 
-
-
-
-
 export function createMarker(point) {
   const coordinates = getCoordinates(point.geometry);
   const icon = getMarkerIcon(point);

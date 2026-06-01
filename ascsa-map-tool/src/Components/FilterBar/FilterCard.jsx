@@ -61,7 +61,7 @@ const FilterCard = ({ areFiltersOpen = false, setFilters, filterLoading }) => {
       </Card.Body>
 
       <Card.Footer flexDir="row" justifyContent="flex-end">
-        <Button size="md" flexGrow={1} fontSize="lg" mt={2} variant="surface" onPointerDown={startHold} onPointerUp={cancelHold} _={() => {console.log("hello");}}>
+        <Button size="md" flexGrow={1} fontSize="lg" mt={2} variant="surface" onPointerDown={startHold} onPointerUp={cancelHold}>
           <Tooltip
             showArrow
             content="Long press to clear"

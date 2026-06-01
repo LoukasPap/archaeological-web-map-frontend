@@ -62,7 +62,6 @@ export const onShapeCreated = (
       onPolygonCreated(e, activeData, setMarkersInBounds);
       break;
     default:
-      console.log("Problem with e.shape=[", e.shape, "]");
   }
 };
 
@@ -81,10 +80,8 @@ export const onCircleCreated = (
         activeData,
         setMarkersInBounds
       );
-      console.log("This circle was updated!");
     });
     
-
     checkIntersectingMarkers(
       "Circle",
       circleLayer,
@@ -110,7 +107,6 @@ export const onRectangleCreated = (
         activeData,
         setMarkersInBounds
       );
-      console.log("This rectangle was updated!");
     });
 
     checkIntersectingMarkers(
@@ -138,7 +134,6 @@ export const onPolygonCreated = (
         activeData,
         setMarkersInBounds
       );
-      console.log("This polygon was updated!");
     });
 
     checkIntersectingMarkers(

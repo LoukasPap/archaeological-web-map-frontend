@@ -54,11 +54,8 @@ const Landing = () => {
   const loginMut = useMutation({
     mutationFn: loginUser,
     onMutate: () => {
-      console.log("mutating...");
     },
     onSuccess: (data) => {
-      console.log("DATA", data);
-
       if (data.access_token) {
         localStorage.setItem("token", data.access_token);
         nav("/map");
@@ -98,9 +95,6 @@ const Landing = () => {
 
   const registerMut = useMutation({
     mutationFn: registerUser,
-    onMutate: () => {
-      console.log("Processing registration...", registerMut.isPending);
-    },
     onSuccess: (data) => {
       if (data.token) {
         localStorage.setItem("token", data.token);
@@ -120,7 +114,6 @@ const Landing = () => {
       const payload = err?.payload;
       if (payload?.detail && typeof payload.detail === "object") {
         const e = payload.detail;
-        console.log(e);
 
         if (e.username)
           setRegisterError("registerUsername", {

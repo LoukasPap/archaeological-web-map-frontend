@@ -82,7 +82,7 @@ const MultipleMarkersCard = ({
   const addCollectionMutation = useMutation({
     mutationFn: (data) => addCollectionDB(data),
     onError: (error) => {
-      console.log(`[LOG] Error storing collection! --> ${error}`);
+      console.log(`Error storing collection: ${error}`);
     },
   });
 

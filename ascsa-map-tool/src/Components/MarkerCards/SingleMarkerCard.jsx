@@ -85,7 +85,6 @@ const SingleMarkerCard = ({ marker, toggleCard, isVisible }) => {
   const [pointDetails, setPointDetails] = useState(initialObject);
 
   useEffect(() => {
-    console.log("[DEBUG] SELECTED MARKER", marker);
     if (marker) {
       setPointDetails({
         ...pointDetails,
@@ -146,7 +145,6 @@ const SingleMarkerCard = ({ marker, toggleCard, isVisible }) => {
         onLoad={(e) => {
           const { width, height } = e.target;
           const { ratio, displayRatio } = calculateAspectRatio(width, height);
-          console.log(width, height, ratio);
           e.target.style.aspectRatio = ratio;
         }}
         onError={(e) => {

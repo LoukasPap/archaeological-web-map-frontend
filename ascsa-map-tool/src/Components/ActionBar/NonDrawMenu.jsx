@@ -61,7 +61,6 @@ const NonDrawMenu = ({ activeTool, setActiveTool, mapRef }) => {
     handleEvent(mapRef, e.items[0].value);
     lastNDActionRef.current = e.items[0];
     setSelected([e.items[0]]);
-    console.log("DEBUG e onValueChange", e);
   };
 
   const SelectTrigger = () => {
@@ -90,7 +89,6 @@ const NonDrawMenu = ({ activeTool, setActiveTool, mapRef }) => {
             setActiveTool(val);
             // setSelected([ndActions.items.find((a) => a.value === val)]);
           }
-          console.log("DEBUG - PRESS ACTION:", val, "-", selected);
         }}
         border={0}
       >

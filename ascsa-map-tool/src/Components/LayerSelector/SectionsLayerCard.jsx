@@ -75,8 +75,6 @@ const SectionsLayerCard = ({ areLayersOpen, setImages, toggleTitles }) => {
             checked={checked}
             onCheckedChange={(e) => {
               setChecked(e.checked);
-              console.log("e.checked", e.checked);
-
               toggleTitles(e.checked);
             }}
           />
