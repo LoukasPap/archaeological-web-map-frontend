@@ -251,7 +251,7 @@ const MapLayer = () => {
   }, [markersInBounds]);
 
   async function runTextSearchMutation() {
-    if (hasTextSearchFilterChanged(filters.textSearch, prevFilter.textSearch)) {
+    if ((typeof prevFilter !== "undefined") && hasTextSearchFilterChanged(filters.textSearch, prevFilter.textSearch)) {
       if (isTextSearchFilterEmpty(filters.textSearch)) {
         await qc.refetchQueries({ queryKey: ["data"] });
       } else {
@@ -306,8 +306,7 @@ const MapLayer = () => {
   }, [mapReady, activeData]);
 
   function applyClientSideFilters(newActiveData) {
-    console.log("[LOG] Applying client side filters", newActiveData);
-
+    if (typeof newActiveData === "undefined") return;
     // drop data without coordinates
     let monumentData = newActiveData.features.filter(
       (m) => m.Type == "monument" && m.geometry != null
