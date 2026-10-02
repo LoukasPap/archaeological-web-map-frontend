@@ -142,7 +142,7 @@ const Landing = () => {
 
   return (
     <Center h="100%" overflow="auto">
-      <Stack gap={16} mb="10" align={"center"}>
+      <Stack gap={{ base: 8, lg: 16 }} my="10" px="4" align={"center"}>
         {state && state.message && (
           <Alert
             w="fit"
@@ -163,7 +163,7 @@ const Landing = () => {
           <Box>
             <Text
               color="#69A100"
-              fontSize="2xl"
+              fontSize={{ base: "md", sm: "xl", md: "2xl" }}
               fontWeight={"light"}
               lineHeight="1"
             >
@@ -171,12 +171,12 @@ const Landing = () => {
               <br />
               CLASSICAL STUDIES AT ATHENS
             </Text>
-            <Text color="gray.400" fontSize="xl">
+            <Text color="gray.400" fontSize={{ base: "lg", md: "xl" }}>
               Research Map Tool
             </Text>
           </Box>
         </HStack>
-        <SimpleGrid columns={[1, , , 3]} justifyItems={"center"}>
+        <SimpleGrid columns={{ base: 1, lg: 3 }} gap={{ base: 8, lg: 0 }} justifyItems={"center"}>
           <Stack gap="4" w="250px">
             <Heading as="h1" size={"3xl"}>
               Enter in your account
@@ -235,22 +235,29 @@ const Landing = () => {
             </form>
           </Stack>
 
-          <VStack justifyContent={"center"} alignItems={"center"} w="100px">
+          <Stack
+            direction={{ base: "row", lg: "column" }}
+            justifyContent={"center"}
+            alignItems={"center"}
+            w={{ base: "250px", lg: "100px" }}
+          >
             <Separator
-              h="1/3"
-              orientation="vertical"
+              flex="1"
+              h={{ lg: "1/3" }}
+              orientation={{ base: "horizontal", lg: "vertical" }}
               size="md"
               colorPalette="gray"
             />
 
             <Text flexShrink="0">or</Text>
             <Separator
-              h="1/3"
-              orientation="vertical"
+              flex="1"
+              h={{ lg: "1/3" }}
+              orientation={{ base: "horizontal", lg: "vertical" }}
               size="md"
               colorPalette="gray"
             />
-          </VStack>
+          </Stack>
 
           <Stack gap="4" w="250px">
             <Heading as="h1" size={"3xl"}>

@@ -4,6 +4,8 @@ import ArtifactsFilters from "./Subcomponents/ArtifactsFilters";
 import { Tooltip } from "../ui/tooltip";
 import { LuInfo } from "react-icons/lu";
 
+import { CARD_WIDTH, CARD_TOP } from "../layout";
+
 const FilterCard = ({ areFiltersOpen = false, setFilters, filterLoading }) => {
   const [cleanFilters, setCleanFilters] = useState(false);
   const filtersState = useRef({});
@@ -41,12 +43,12 @@ const FilterCard = ({ areFiltersOpen = false, setFilters, filterLoading }) => {
         pointerEvents: areFiltersOpen ? "auto" : "none",
         transition: "opacity 0.5s",
       }}
-      w={{ sm: "30vw", md: "25vw", lg: "22.5vw" }}
+      w={CARD_WIDTH}
       bg="white"
       // p="30px 22px"
       rounded="xl"
       border="1px solid #C6C6C6"
-      top="calc(3.5vh + 5px)"
+      top={CARD_TOP}
       bottom="calc(12px + 12px)"
       position="absolute"
     >

@@ -73,6 +73,8 @@ const MainMenu = () => {
           variant="surface"
           bg="white"
           rounded="xl"
+          h={{ base: "100%", md: "10" }}
+          minW="10"
           _hover={{ bg: "gray.200" }}
         >
           <Icon size="lg" color={"gray.900"}>

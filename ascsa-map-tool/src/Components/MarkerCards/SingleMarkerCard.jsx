@@ -29,6 +29,8 @@ import { Tooltip } from "../ui/tooltip";
 import { useEffect, useState } from "react";
 import SingleMarkerCardFooter from "./SingleMarkerCardFooter";
 import DimensionsTable from "./DimensionsTable";
+import BottomSheet from "./BottomSheet";
+import useIsMobile from "../../CustomHooks/useIsMobile";
 
 const initialObject = {
   inventory: "name",
@@ -83,6 +85,7 @@ const CoinsExtraDetails = ({ obverse, reverse }) => {
 
 const SingleMarkerCard = ({ marker, toggleCard, isVisible }) => {
   const [pointDetails, setPointDetails] = useState(initialObject);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     if (marker) {
@@ -162,13 +165,13 @@ const SingleMarkerCard = ({ marker, toggleCard, isVisible }) => {
   const Header = () => {
     return (
       <DataList.Root w="100%">
-        <HStack gap={3} alignItems="top">
+        <HStack gap={{ base: 2, md: 3 }} alignItems="top">
           <DataList.Item key="inventory" flexGrow={1}>
             <DataList.ItemLabel>Inventory</DataList.ItemLabel>
             <DataList.ItemValue>
-              <Group>
+              <Group gap={{ base: 0, md: 2 }}>
                 <Card.Title h="fit" overflow="visible">
-                  <Text fontSize="2xl">
+                  <Text fontSize={{ base: "xl", md: "2xl" }} whiteSpace="nowrap">
                     {(marker && isMonumentType(pointDetails.type)
                       ? "-"
                       : pointDetails.inventory) || "-"}
@@ -183,7 +186,7 @@ const SingleMarkerCard = ({ marker, toggleCard, isVisible }) => {
                   <Clipboard.Trigger asChild>
                     <IconButton _hover={{ bg: "gray.300" }} variant="plain">
                       <Clipboard.Indicator>
-                        <LuCopy size={30} />
+                        <LuCopy size={isMobile ? 22 : 30} />
                       </Clipboard.Indicator>
                     </IconButton>
                   </Clipboard.Trigger>
@@ -195,7 +198,7 @@ const SingleMarkerCard = ({ marker, toggleCard, isVisible }) => {
           <DataList.Item key="deposit">
             <DataList.ItemLabel>Deposit</DataList.ItemLabel>
             <DataList.ItemValue>
-              <Tag.Root colorPalette="blue" size="xl">
+              <Tag.Root colorPalette="blue" size={isMobile ? "lg" : "xl"}>
                 <Tag.Label>{pointDetails.deposit}</Tag.Label>
               </Tag.Root>
             </DataList.ItemValue>
@@ -204,7 +207,7 @@ const SingleMarkerCard = ({ marker, toggleCard, isVisible }) => {
           <DataList.Item key="lot">
             <DataList.ItemLabel>Lot</DataList.ItemLabel>
             <DataList.ItemValue>
-              <Tag.Root colorPalette="orange" size="xl">
+              <Tag.Root colorPalette="orange" size={isMobile ? "lg" : "xl"}>
                 <Tag.Label>{pointDetails.lot}</Tag.Label>
               </Tag.Root>
             </DataList.ItemValue>
@@ -214,25 +217,8 @@ const SingleMarkerCard = ({ marker, toggleCard, isVisible }) => {
     );
   };
 
-  return (
-    <Card.Root
-      style={{
-        opacity: isVisible ? 1 : 0,
-        pointerEvents: isVisible ? "auto" : "none",
-        transition: "opacity 0.5s",
-      }}
-      w="20vw"
-      position="fixed"
-      top="12px"
-      right="12px"
-      maxH="calc(100% - 12px*2)" // we set 12px * 2 to take into the 12px distance from top and bottom
-      rounded="xl"
-      border="1px solid"
-      borderColor="gray.300"
-      scrollbarColor="black transparent"
-      scrollbarWidth="thin"
-    >
-      <Card.Header mt="2">
+  const headerSection = (
+      <Card.Header mt={isMobile ? "0" : "2"}>
         <HStack
           alignItems="center"
           justifyContent="space-between"
@@ -241,19 +227,23 @@ const SingleMarkerCard = ({ marker, toggleCard, isVisible }) => {
         >
           <Header />
 
-          <CloseButton
-            _hover={{ bg: "gray.300" }}
-            onClick={() => {
-              toggleCard("");
-            }}
-          >
-            <LuX style={{ width: "2em", height: "auto" }} />
-          </CloseButton>
+          {!isMobile && (
+            <CloseButton
+              _hover={{ bg: "gray.300" }}
+              onClick={() => {
+                toggleCard("");
+              }}
+            >
+              <LuX style={{ width: "2em", height: "auto" }} />
+            </CloseButton>
+          )}
         </HStack>
         <Separator size="sm" mt={1} borderColor={"gray.300"} />
       </Card.Header>
+  );
 
-      <Card.Body gap="4" maxH="100%" overflow="auto">
+  const bodySection = (
+      <Card.Body gap="4" maxH="100%" minH="0" overflow="auto">
         <DataList.Root color="black" size="lg">
           <SimpleGrid columns={3} gap="4">
             {propList.map((prop) => (
@@ -354,11 +344,53 @@ const SingleMarkerCard = ({ marker, toggleCard, isVisible }) => {
           </Text>
         </Box>
       </Card.Body>
+  );
 
+  const footerSection = (
       <SingleMarkerCardFooter
         source={pointDetails.link}
         coords={pointDetails.coords}
+        compact={isMobile}
       />
+  );
+
+  // Mobile: bottom drawer (peek -> tap / drag up for the full card)
+  if (isMobile) {
+    return (
+      <BottomSheet
+        isVisible={isVisible}
+        resetKey={marker?.Name}
+        onClose={() => toggleCard("")}
+        header={headerSection}
+      >
+        {bodySection}
+        {footerSection}
+      </BottomSheet>
+    );
+  }
+
+  // Desktop: right sidebar
+  return (
+    <Card.Root
+      style={{
+        opacity: isVisible ? 1 : 0,
+        pointerEvents: isVisible ? "auto" : "none",
+        transition: "opacity 0.5s",
+      }}
+      w={{ md: "max(20vw, 320px)", lg: "max(20vw, 340px)", xl: "20vw" }}
+      position="fixed"
+      top="12px"
+      right="12px"
+      maxH="calc(100% - 12px*2)" // we set 12px * 2 to take into the 12px distance from top and bottom
+      rounded="xl"
+      border="1px solid"
+      borderColor="gray.300"
+      scrollbarColor="black transparent"
+      scrollbarWidth="thin"
+    >
+      {headerSection}
+      {bodySection}
+      {footerSection}
     </Card.Root>
   );
 };

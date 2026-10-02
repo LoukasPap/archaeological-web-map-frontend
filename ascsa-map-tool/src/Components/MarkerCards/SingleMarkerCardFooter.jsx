@@ -7,6 +7,7 @@ import {
   Card,
   Group,
   Icon,
+  useClipboard,
 } from "@chakra-ui/react";
 import { useState } from "react";
 import {
@@ -42,7 +43,40 @@ export const MarkerButton = ({ id, label, icon, onClick = null }) => {
   );
 };
 
-const SingleMarkerCardFooter = ({ source, coords = "-" }) => {
+// Mobile drawer variant: two standard buttons inside the drawer
+const CompactFooter = ({ source, coords = "-" }) => {
+  const clipboard = useClipboard({ value: String(coords) });
+
+  return (
+    <Card.Footer
+      w="100%"
+      flexDir="row"
+      gap="3"
+      p="3"
+      borderTop="1px solid"
+      borderColor="gray.300"
+      bg="white"
+    >
+      <Button flexGrow={1} w="1" size="lg" variant="outline" onClick={clipboard.copy}>
+        {clipboard.copied ? <LuMapPinCheckInside /> : <LuMapPin />}
+        {clipboard.copied ? "Copied" : "Location"}
+      </Button>
+
+      <Button flexGrow={1} w="1" size="lg" asChild>
+        <a href={source} target="_blank" rel="noreferrer">
+          <LuGlobe />
+          Source
+          <LuExternalLink />
+        </a>
+      </Button>
+    </Card.Footer>
+  );
+};
+
+const SingleMarkerCardFooter = ({ source, coords = "-", compact = false }) => {
+  if (compact) return <CompactFooter source={source} coords={coords} />;
+
+
   const customStyle = { width: "2.25em", height: "2.25em" };
 
   const [copied, setCopied] = useState(false);

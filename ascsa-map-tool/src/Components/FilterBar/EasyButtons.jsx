@@ -6,6 +6,8 @@ import {
   LuMap,
 } from "react-icons/lu";
 import MainMenu from "../MainMenu";
+import useIsMobile from "../../CustomHooks/useIsMobile";
+import { EASY_BUTTONS_HEIGHT } from "../layout";
 
 const FILTERS_CARD = "filters";
 const COLLECTIONS_CARD = "collections";
@@ -18,10 +20,11 @@ const EasyButtons = ({ openUserCard }) => {
   const [layersClosed, setLayersClosed] = useState(true);
   const curOpenCardRef = useRef(NONE);
 
-  const customStyle = { height: "1.5em" };
+  const isMobile = useIsMobile();
+  const customStyle = { height: isMobile ? "1.15em" : "1.5em" };
 
   return (
-    <HStack w="100%" h="3.5vh" gap="5px" pointerEvents="auto" display="flex">
+    <HStack w="100%" h={EASY_BUTTONS_HEIGHT} gap="5px" pointerEvents="auto" display="flex">
       
       <MainMenu />
 
@@ -31,7 +34,7 @@ const EasyButtons = ({ openUserCard }) => {
         bg={filterClosed ? "white" : "gray.900"}
         color={filterClosed ? "black" : "white"}
         h="100%"
-        p={2}
+        p={{ base: "2px", md: 2 }}
         rounded="7.5px"
         border="1px solid"
         borderColor="gray.300"
@@ -41,7 +44,10 @@ const EasyButtons = ({ openUserCard }) => {
           id="filters"
           cursor="pointer"
           w="fit"
-          minW="6.5em"
+          minW={{ base: 0, md: "6.5em" }}
+          flexDirection={{ base: "column", md: "row" }}
+          justifyContent="center"
+          gap={{ base: 0, md: 2 }}
           checked={filterClosed}
           onCheckedChange={(e) => {
             setFilterClosed(!!e.checked);
@@ -68,7 +74,7 @@ const EasyButtons = ({ openUserCard }) => {
               style={customStyle}
             />
           </Checkbox.Control>
-          <Checkbox.Label w="full" textAlign="center" fontSize="lg" px="1">
+          <Checkbox.Label w="full" textAlign="center" fontSize={{ base: "2xs", md: "lg" }} px="1">
             Filters
           </Checkbox.Label>
         </Checkbox.Root>
@@ -79,7 +85,7 @@ const EasyButtons = ({ openUserCard }) => {
         flexGrow={1}
         bg={collectionsClosed ? "white" : "gray.900"}
         color={collectionsClosed ? "black" : "white"}
-        p={2}
+        p={{ base: "2px", md: 2 }}
         h="100%"
         rounded="md"
         border="1px solid"
@@ -89,7 +95,10 @@ const EasyButtons = ({ openUserCard }) => {
         <Checkbox.Root
           id="collection"
           w="fit"
-          minW="6.5em"
+          minW={{ base: 0, md: "6.5em" }}
+          flexDirection={{ base: "column", md: "row" }}
+          justifyContent="center"
+          gap={{ base: 0, md: 2 }}
           checked={collectionsClosed}
           onCheckedChange={(e) => {
             setCollectionsClosed(!!e.checked);
@@ -120,7 +129,7 @@ const EasyButtons = ({ openUserCard }) => {
             cursor="pointer"
             w="full"
             textAlign="center"
-            fontSize={"lg"}
+            fontSize={{ base: "2xs", md: "lg" }}
             pe="1"
           >
             Collections
@@ -133,7 +142,7 @@ const EasyButtons = ({ openUserCard }) => {
         flexGrow={1}
         bg={layersClosed ? "white" : "gray.900"}
         color={layersClosed ? "black" : "white"}
-        p={2}
+        p={{ base: "2px", md: 2 }}
         h="100%"
         rounded="md"
         border="1px solid"
@@ -143,7 +152,10 @@ const EasyButtons = ({ openUserCard }) => {
         <Checkbox.Root
           id="layers"
           w="fit"
-          minW="6.5em"
+          minW={{ base: 0, md: "6.5em" }}
+          flexDirection={{ base: "column", md: "row" }}
+          justifyContent="center"
+          gap={{ base: 0, md: 2 }}
           checked={layersClosed}
           onCheckedChange={(e) => {
             setLayersClosed(!!e.checked);
@@ -174,7 +186,7 @@ const EasyButtons = ({ openUserCard }) => {
             cursor="pointer"
             w="full"
             textAlign="center"
-            fontSize={"lg"}
+            fontSize={{ base: "2xs", md: "lg" }}
             pe="1"
           >
             Layers

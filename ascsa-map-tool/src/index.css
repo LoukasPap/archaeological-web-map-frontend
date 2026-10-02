@@ -1,5 +1,6 @@
 #root {
   height: 100vh;
+  height: 100dvh;
   overflow: hidden;
   position: fixed;
   top: 0;
@@ -10,6 +11,7 @@
 
 .leaflet-container {
   height: 100vh;
+  height: 100dvh;
   width: 100%;
   z-index: -1;
   position: fixed;
@@ -19,4 +21,19 @@
 .pm-textarea.pm-disabled {
   border: 1px solid black !important;
   background: whitesmoke !important;
+}
+
+/* Keep map controls above the bottom drawer (set by BottomSheet on mobile) */
+.leaflet-bottom {
+  bottom: var(--bottom-sheet-offset, 0px);
+  transition: bottom 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* Bigger touch targets for the map zoom buttons on touch screens */
+@media (pointer: coarse) {
+  .leaflet-touch .leaflet-bar a {
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+  }
 }

@@ -50,6 +50,8 @@ import {
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import usePrevious from "../CustomHooks/usePrevious";
+import useIsMobile from "../CustomHooks/useIsMobile";
+import { CARD_WIDTH } from "./layout";
 import SectionsLayer from "./LayerSelector/SectionsLayer";
 import SectionsLayerCard from "./LayerSelector/SectionsLayerCard";
 
@@ -120,6 +122,13 @@ const MapLayer = () => {
 
   const [markersCard, toggleMarkersCard] = useState("");
   const [userCardOpen, setUserCardOpen] = useState(NONE);
+  const isMobile = useIsMobile();
+
+  // On phones the user cards take the whole screen, so dismiss the bottom drawer first
+  function openUserCard(card) {
+    setUserCardOpen(card);
+    if (isMobile && card !== NONE) toggleMarkersCard("");
+  }
 
   const [savedCollections, setSavedCollections] = useState([]);
   const allCollectionsRef = useRef([]);
@@ -584,6 +593,7 @@ const MapLayer = () => {
         isSavedInCollection={isSavedInCollection.current}
         isVisible={markersCard == "multi"}
         onMarkerClick={displayMarkerCard}
+        onClose={() => toggleMarkersCard("")}
       />
 
       {mapReady && (
@@ -594,9 +604,9 @@ const MapLayer = () => {
         />
       )}
 
-      <Box w="fit" m="12px" pos="relative" h="100%" pointerEvents="none">
-        <VStack w="22.5vw">
-          <EasyButtons openUserCard={setUserCardOpen}></EasyButtons>
+      <Box w="fit" m="12px" pos="relative" zIndex="30" h="100%" pointerEvents="none">
+        <VStack w={CARD_WIDTH}>
+          <EasyButtons openUserCard={openUserCard}></EasyButtons>
 
           {/* The User Cards*/}
 

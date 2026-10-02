@@ -30,6 +30,8 @@ import {
 } from "react-icons/lu";
 
 import { MarkerButton } from "./SingleMarkerCardFooter";
+import BottomSheet from "./BottomSheet";
+import useIsMobile from "../../CustomHooks/useIsMobile";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { addCollectionDB, fetchPointData, pointQueryKey } from "../../Queries";
@@ -60,8 +62,10 @@ const MultipleMarkersCard = ({
   isSavedInCollection,
   isVisible,
   onMarkerClick,
+  onClose,
 }) => {
   
+  const isMobile = useIsMobile();
   const pageSize = 25;
   const [page, setPage] = useState(1);
 
@@ -289,24 +293,7 @@ const MultipleMarkersCard = ({
     );
   };
 
-  return (
-    <Card.Root
-      style={{
-        opacity: isVisible ? 1 : 0,
-        pointerEvents: isVisible ? "auto" : "none",
-        transition: "opacity 0.5s",
-      }}
-      w="20vw"
-      position="fixed"
-      top="12px"
-      right="12px"
-      maxH="calc(100% - 12px*2)" // we set 12px * 2 to take into the 12px distance from top and bottom
-      rounded="xl"
-      border="1px solid"
-      borderColor="gray.300"
-      gap={2}
-      overflow="auto"
-    >
+  const headerSection = (
       <Card.Header>
         <Text>
           selection:{" "}
@@ -355,11 +342,14 @@ const MultipleMarkersCard = ({
           </ButtonGroup>
         </Pagination.Root>
       </Card.Header>
-      
+  );
+
+  const bodySection = (
       <Card.Body
         pt="0"
         gap="2"
-        overflow="scroll"
+        overflow="auto"
+        minH="0"
         scrollbarColor="black transparent"
         scrollbarWidth="thin"
       >
@@ -367,6 +357,43 @@ const MultipleMarkersCard = ({
           {(item, index) => <Marker info={item} key={index} />}
         </For>
       </Card.Body>
+  );
+
+  // Mobile: bottom drawer (peek -> tap / drag up for the full list)
+  if (isMobile) {
+    return (
+      <BottomSheet
+        isVisible={isVisible}
+        resetKey={collection.id}
+        onClose={() => onClose?.()}
+        header={headerSection}
+      >
+        {bodySection}
+        <Footer save={save} />
+      </BottomSheet>
+    );
+  }
+
+  return (
+    <Card.Root
+      style={{
+        opacity: isVisible ? 1 : 0,
+        pointerEvents: isVisible ? "auto" : "none",
+        transition: "opacity 0.5s",
+      }}
+      w={{ md: "max(20vw, 320px)", lg: "max(20vw, 340px)", xl: "20vw" }}
+      position="fixed"
+      top="12px"
+      right="12px"
+      maxH="calc(100% - 12px*2)" // we set 12px * 2 to take into the 12px distance from top and bottom
+      rounded="xl"
+      border="1px solid"
+      borderColor="gray.300"
+      gap={2}
+      overflow="auto"
+    >
+      {headerSection}
+      {bodySection}
       <Footer save={save} />
     </Card.Root>
   );

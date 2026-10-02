@@ -16,7 +16,7 @@ const ActionButton = ({ icon, event, isActive, id }) => {
           : { bg: "gray.300", transform: "scale(1.1)" }
       }
       id={id}
-      p="2.5"
+      p={{ base: "1.5", md: "2.5" }}
       w="fit"
       h="fit"
       onClick={event}

@@ -19,6 +19,8 @@ import { LuEye, LuEyeClosed, LuTrash2 } from "react-icons/lu";
 import { Tooltip } from "../ui/tooltip";
 import { BiShapeCircle, BiShapeSquare, BiShapePolygon } from "react-icons/bi";
 
+import { CARD_WIDTH, CARD_TOP } from "../layout";
+
 const CollectionsCard = ({
   areCollectionsOpen = false,
   savedCollections = [{ name: "a" }, { name: "b" }],
@@ -171,11 +173,11 @@ const CollectionsCard = ({
         pointerEvents: areCollectionsOpen ? "auto" : "none",
         transition: "opacity 0.4s cubic-bezier(.4,0,.2,1)",
       }}
-      w={{ sm: "30vw", md: "25vw", lg: "22.5vw" }}
+      w={CARD_WIDTH}
       bg="white"
       rounded="xl"
       border="1px solid #C6C6C6"
-      top="calc(3.5vh + 5px)"
+      top={CARD_TOP}
       bottom="calc(12px + 12px)"
       position="absolute"
     >
