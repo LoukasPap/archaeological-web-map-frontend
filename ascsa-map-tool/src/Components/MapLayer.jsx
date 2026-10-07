@@ -51,6 +51,7 @@ import {
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import usePrevious from "../CustomHooks/usePrevious";
 import useIsMobile from "../CustomHooks/useIsMobile";
+import useAuth from "../CustomHooks/useAuth";
 import { CARD_WIDTH } from "./layout";
 import SectionsLayer from "./LayerSelector/SectionsLayer";
 import SectionsLayerCard from "./LayerSelector/SectionsLayerCard";
@@ -145,9 +146,15 @@ const MapLayer = () => {
   const cidRef = useRef(0);
   const qc = useQueryClient();
 
-  const token = localStorage.getItem("token");
-  const cachedUser = qc.getQueryData(["verifyToken", token]); // may be undefined
-  const currentUser = cachedUser;
+  // Guests have no user; collections are only stored for logged-in users
+  const { user, isAuthenticated, openAuthDialog } = useAuth();
+
+  const onCollectionRequestError = (error, action) => {
+    console.log(`Error ${action} collection: ${error?.status ?? error}`);
+    if (error?.status === 401) {
+      openAuthDialog("Your session expired. Please log in again to manage your collections.");
+    }
+  };
 
   const textSearchMutation = useMutation({
     mutationFn: () => fetchFromTextSearch(filters.textSearch),
@@ -162,14 +169,12 @@ const MapLayer = () => {
 
   const updateCollectionMutation = useMutation({
     mutationFn: (id, values) => updateCollectionDB(id, values),
-    onError: (error) =>
-      console.log(`Error updating collection: ${error}`),
+    onError: (error) => onCollectionRequestError(error, "updating"),
   });
 
   const deleteCollectionMutation = useMutation({
     mutationFn: (id) => deleteCollectionDB(id),
-    onError: (error) =>
-      console.log(`Error deleting collection: ${error}`),
+    onError: (error) => onCollectionRequestError(error, "deleting"),
   });
 
   let { data } = useQuery({
@@ -184,15 +189,40 @@ const MapLayer = () => {
     data: collectionData,
     isSuccess,
   } = useQuery({
-    queryKey: ["collectionData"],
-    queryFn: () => getCollectionsDB(currentUser.user?.username),
+    queryKey: ["collectionData", user?.username],
+    queryFn: () => getCollectionsDB(user.username),
     refetchOnWindowFocus: false,
     staleTime: Infinity,
-    enabled: true,
+    enabled: isAuthenticated,
   });
 
+  // Logging out (or never logging in): saved collections belong to the account,
+  // so drop them from the map and keep only the guest's unsaved ones.
   useEffect(() => {
-    if (isSuccess && collectionData) {
+    if (isAuthenticated) return;
+
+    const accountCollections = allCollectionsRef.current.filter((c) => c.isSaved);
+    if (accountCollections.length === 0) return;
+
+    accountCollections.forEach((c) => removeShapeLayer(c));
+    allCollectionsRef.current = allCollectionsRef.current.filter((c) => !c.isSaved);
+    setSavedCollections(allCollectionsRef.current);
+    setVisibleCollections((prev) =>
+      prev.filter((id) => allCollectionsRef.current.some((c) => c.id === id))
+    );
+    savedIDS.current = [];
+
+    if (selectedCollection?.isSaved) {
+      toggleMarkersCard("");
+      setSelectedCollection({});
+      setMarkersInBounds([]);
+      globalMIBRef.current = [];
+      setOpacityOfDOMMarkers(1);
+    }
+  }, [isAuthenticated]);
+
+  useEffect(() => {
+    if (isAuthenticated && isSuccess && collectionData) {
       let dbcollections = collectionData.data.map((collection) => {
         const restoredShape = restoreShape(collection.shape);
 
@@ -211,12 +241,14 @@ const MapLayer = () => {
         );
       });
 
-      allCollectionsRef.current = dbcollections;
-      setSavedCollections(dbcollections);
+      // keep the groups the user drew before logging in
+      const unsavedCollections = allCollectionsRef.current.filter((c) => !c.isSaved);
+      allCollectionsRef.current = [...dbcollections, ...unsavedCollections];
+      setSavedCollections(allCollectionsRef.current);
 
-      savedIDS.current.push(...dbcollections.map((x) => x.id));
+      savedIDS.current = dbcollections.map((x) => x.id);
     }
-  }, [isSuccess, collectionData]);
+  }, [isAuthenticated, isSuccess, collectionData]);
 
   const ZoomTracker = () => {
     useMapEvents({
@@ -309,11 +341,13 @@ const MapLayer = () => {
 
     const monumentsVisibility = filters.monument.ShowMonuments;
 
-    if (monumentsVisibility != "Only") {
+    if (monumentsVisibility == "Only") {
+      // "Show only": drop every artifact, the monuments are added below
+      newActiveData = [];
+    } else {
       newActiveData = applyPeriodFilter(newActiveData, filters);
+      newActiveData = applyInventoryFilter(newActiveData, filters);
     }
-
-    newActiveData = applyInventoryFilter(newActiveData, filters);
     // We push the monuments_data second to be more efficient (they are just ~50 allocations)
     newActiveData = applyMonumentFilter(newActiveData, monumentData, monumentsVisibility, filters);
     newActiveData = applySectionFilter(newActiveData, filters);
@@ -485,7 +519,10 @@ const MapLayer = () => {
       (col) => col.id != c.id
     );
 
-    await deleteCollectionMutation.mutateAsync(c.id);
+    // unsaved (guest) groups only exist locally
+    if (c.isSaved && isAuthenticated) {
+      await deleteCollectionMutation.mutateAsync(c.id);
+    }
     setSavedCollections((prev) => prev.filter((col) => col.id !== c.id));
 
     currentShape.current = null;

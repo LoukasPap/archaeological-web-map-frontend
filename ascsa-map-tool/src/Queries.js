@@ -1,9 +1,18 @@
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 
+// Collections belong to a registered user, so these calls carry the bearer token
+const authHeaders = () => {
+  const token = localStorage.getItem("token");
+  return {
+    "Content-Type": "application/json",
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  };
+};
+
 export const addCollectionDB = async (data) => {
   const res = await fetch(`${BASE_URL}/collections`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: authHeaders(),
     body: JSON.stringify(data),
   });
   if (!res.ok) throw { status: res.status };
@@ -13,7 +22,7 @@ export const addCollectionDB = async (data) => {
 export const updateCollectionDB = async (data) => {
   const res = await fetch(`${BASE_URL}/collections/${data.id}`, {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
+    headers: authHeaders(),
     body: JSON.stringify(data.values),
   });
   if (!res.ok) throw { status: res.status };
@@ -21,7 +30,9 @@ export const updateCollectionDB = async (data) => {
 };
 
 export const getCollectionsDB = async (data) => {
-  const res = await fetch(`${BASE_URL}/collections/${data}`);
+  const res = await fetch(`${BASE_URL}/collections/${data}`, {
+    headers: authHeaders(),
+  });
   if (!res.ok) throw { status: res.status };
   return res.json();
 };
@@ -29,7 +40,7 @@ export const getCollectionsDB = async (data) => {
 export const deleteCollectionDB = async (id) => {
   const res = await fetch(`${BASE_URL}/collections/${id}`, {
     method: "DELETE",
-    headers: { "Content-Type": "application/json" },
+    headers: authHeaders(),
   });
   if (!res.ok) throw { status: res.status };
   return res.json();
@@ -70,7 +81,7 @@ async function register(path, body) {
     body: JSON.stringify(body),
   });
 
-  const payload = await res.json().catch();
+  const payload = await res.json().catch(() => ({}));
   if (!res.ok) throw { status: res.status, payload };
   return payload;
 }

@@ -13,37 +13,37 @@ import {
   For,
   Separator,
 } from "@chakra-ui/react";
-import { useQueryClient } from "@tanstack/react-query";
-import { LuExternalLink, LuLogOut, LuMenu, LuSettings } from "react-icons/lu";
-import { useLocation, useNavigate } from "react-router-dom";
+import { LuExternalLink, LuLogIn, LuLogOut, LuMenu, LuSettings } from "react-icons/lu";
+import { useState } from "react";
+import useAuth from "../CustomHooks/useAuth";
 
 const MainMenu = () => {
-  const qc = useQueryClient();
-  const token = localStorage.getItem("token");
-  const cachedUser = qc.getQueryData(["verifyToken", token]);
-  const currentUser = cachedUser;
+  const { user, isAuthenticated, logout, openAuthDialog } = useAuth();
+  const [open, setOpen] = useState(false);
 
-  const location = useLocation();
-  const navigate = useNavigate();
-
-  function logout() {
-    localStorage.removeItem("token");
-    qc.removeQueries(["verifyToken"], { exact: false });
-    navigate("/", {
-      replace: true,
-      state: {
-        from: location,
-        message: "You have logged out successfully",
-        status: "success",
-      },
-    });
-
-  }
-
-  const menuActions = [
-    // { label: "Settings", color: "gray", icon: <LuSettings />, action: null },
-    { label: "Logout", color: "red", icon: <LuLogOut />, action: logout },
-  ];
+  const menuActions = isAuthenticated
+    ? [
+        {
+          label: "Logout",
+          color: "red",
+          icon: <LuLogOut />,
+          action: () => {
+            setOpen(false);
+            logout();
+          },
+        },
+      ]
+    : [
+        {
+          label: "Log in / Sign up",
+          color: "blue",
+          icon: <LuLogIn />,
+          action: () => {
+            setOpen(false);
+            openAuthDialog("Log in or create an account to save your collections.");
+          },
+        },
+      ];
 
   const MenuItem = ({ item }) => {
     return (
@@ -66,7 +66,8 @@ const MainMenu = () => {
     <Drawer.Root
       size="sm"
       placement="start"
-      //   onOpenChange={(e) => toggle(e.open)}
+      open={open}
+      onOpenChange={(e) => setOpen(e.open)}
     >
       <Drawer.Trigger asChild>
         <IconButton
@@ -92,7 +93,7 @@ const MainMenu = () => {
                 <Avatar.Image src="./coin-img.png" size="md" />
               </Avatar.Root>
               <Drawer.Title fontSize="2xl" color="gray.800">
-                {currentUser.user?.username}
+                {isAuthenticated ? user.username : "Guest"}
               </Drawer.Title>
             </Drawer.Header>
             <Drawer.Body>

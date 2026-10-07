@@ -1,27 +1,12 @@
-import {
-  Center,
-  ChakraProvider,
-  defaultSystem,
-  Spinner,
-} from "@chakra-ui/react";
+import { ChakraProvider, defaultSystem } from "@chakra-ui/react";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
-import {
-  QueryClient,
-  QueryClientProvider,
-  useQuery,
-} from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import App from "./App.jsx";
-import {
-  BrowserRouter,
-  Routes,
-  Route,
-  Navigate,
-  useLocation,
-} from "react-router-dom";
-import Landing from "./Components/Landing.jsx";
-import { verifyToken } from "./Queries.js";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider } from "./CustomHooks/useAuth.jsx";
+import AuthDialog from "./Components/Auth/AuthDialog.jsx";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -31,88 +16,22 @@ const queryClient = new QueryClient({
   },
 });
 
-function ProtectedRoute({ children }) {
-  const token = localStorage.getItem("token");
-  const location = useLocation();
-
-  // verify the token with the server
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ["verifyToken", token],
-    queryFn: () => verifyToken(token),
-    enabled: !!token,
-    retry: false,
-    staleTime: 1000 * 60 * 45,
-  });
-
-  if (!token) {
-    console.log("No token");
-    return (
-      <Navigate
-        to="/"
-        replace
-        state={{
-          from: location,
-          message: "You must first login to your account",
-          status: "error",
-        }}
-      />
-    );
-  }
-
-  if (isLoading)
-    return (
-      <Center w="100vw" h="100vh">
-        <Spinner />
-      </Center>
-    );
-
-  if (isError) {
-    localStorage.removeItem("token");
-    return (
-      <Navigate
-        to="/"
-        replace
-        state={{
-          from: location,
-          message: "You must first login to your account",
-          status: "error",
-        }}
-      />
-    );
-  }
-
-  return children;
-}
-
+// The map is public: guests can use everything except account-only actions
+// (e.g. saving collections), which open the login dialog on demand.
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
       <ChakraProvider value={defaultSystem}>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Landing />} />
-            <Route
-              path="/"
-              element={
-                localStorage.getItem("token") ? (
-                  <Navigate to="/map" replace />
-                ) : (
-                  <Landing />
-                )
-              }
-            />
-            <Route
-              path="/map"
-              element={
-                <ProtectedRoute>
-                  <App />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </BrowserRouter>
+        <AuthProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<App />} />
+              <Route path="/map" element={<Navigate to="/" replace />} />
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </BrowserRouter>
+          <AuthDialog />
+        </AuthProvider>
       </ChakraProvider>
     </QueryClientProvider>
   </StrictMode>

@@ -26,12 +26,14 @@ import {
   LuChevronRight,
   LuCircleX,
   LuSave,
+  LuLock,
   LuArrowRight,
 } from "react-icons/lu";
 
 import { MarkerButton } from "./SingleMarkerCardFooter";
 import BottomSheet from "./BottomSheet";
 import useIsMobile from "../../CustomHooks/useIsMobile";
+import useAuth from "../../CustomHooks/useAuth";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { addCollectionDB, fetchPointData, pointQueryKey } from "../../Queries";
@@ -80,13 +82,15 @@ const MultipleMarkersCard = ({
   const lastSelected = useRef("-1");
 
   const qc = useQueryClient();
-  const token = localStorage.getItem("token");
-  const currentUser = qc.getQueryData(["verifyToken", token]);
+  const { user, isAuthenticated, openAuthDialog } = useAuth();
 
   const addCollectionMutation = useMutation({
     mutationFn: (data) => addCollectionDB(data),
     onError: (error) => {
-      console.log(`Error storing collection: ${error}`);
+      console.log(`Error storing collection: ${error?.status ?? error}`);
+      if (error?.status === 401) {
+        openAuthDialog("Your session expired. Please log in again to save this collection.");
+      }
     },
   });
 
@@ -94,7 +98,7 @@ const MultipleMarkersCard = ({
     const savedCollectionDB = {
       ...collection,
       id: collection.id,
-      username: currentUser.user?.username,
+      username: user?.username,
       name: c.name,
       description: c.description,
       shape: getShapeProperties(collection.type, collection.shape),
@@ -204,7 +208,22 @@ const MultipleMarkersCard = ({
         flexDir="row"
         bg="black"
       >
-        {!isSavedInCollection ? (
+        {!isSavedInCollection && !isAuthenticated ? (
+          // Guests can group points, but saving needs an account
+          <MarkerButton
+            id="save-group"
+            label="Log in to save"
+            icon={
+              <LuLock
+                style={{ width: "2.25em", height: "2.25em" }}
+                strokeWidth="1.5px"
+              />
+            }
+            onClick={() =>
+              openAuthDialog("Log in or create an account to save this collection.")
+            }
+          />
+        ) : !isSavedInCollection ? (
           <>
             <Dialog.Root initialFocusEl={() => ref.current}>
               <Dialog.Trigger asChild>

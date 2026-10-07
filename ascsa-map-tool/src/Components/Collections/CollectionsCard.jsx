@@ -14,9 +14,10 @@ import {
   Flex,
 } from "@chakra-ui/react";
 import { useState } from "react";
-import { LuEye, LuEyeClosed, LuTrash2 } from "react-icons/lu";
+import { LuEye, LuEyeClosed, LuLogIn, LuTrash2 } from "react-icons/lu";
 
 import { Tooltip } from "../ui/tooltip";
+import useAuth from "../../CustomHooks/useAuth";
 import { BiShapeCircle, BiShapeSquare, BiShapePolygon } from "react-icons/bi";
 
 import { CARD_WIDTH, CARD_TOP } from "../layout";
@@ -30,6 +31,7 @@ const CollectionsCard = ({
   visibleCollections = []
 }) => {
   const [openItems, setOpenItems] = useState([]);
+  const { isAuthenticated, openAuthDialog } = useAuth();
 
   const Collection = ({ c }) => {
     const iconSize = 20;
@@ -188,6 +190,31 @@ const CollectionsCard = ({
       </Card.Header>
 
       <Card.Body h="inherit" overflow="auto">
+        {!isAuthenticated && (
+          <Box
+            mb="3"
+            p="3"
+            rounded="lg"
+            border="1px solid"
+            borderColor="gray.300"
+            bg="gray.50"
+          >
+            <Text fontSize="sm" color="gray.600" mb="2">
+              You are browsing as a guest. Log in to keep your collections
+              across sessions.
+            </Text>
+            <Button
+              size="sm"
+              w="full"
+              onClick={() =>
+                openAuthDialog("Log in or create an account to save your collections.")
+              }
+            >
+              <LuLogIn /> Log in / Sign up
+            </Button>
+          </Box>
+        )}
+
         <Accordion.Root
           multiple
           collapsible
