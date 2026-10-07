@@ -35,11 +35,11 @@ const SearchTextFilter = ({ searchTextObj, setSearchText }) => {
           </List.Root>
         </Box>
 
-        <Flex gap={2} flexDir="column" justifyContent="space-between" w="100%">
-          <Field.Root>
+        <Flex gap={2} flexDir="row" flexWrap="wrap" alignItems="center" justifyContent="space-between" w="100%">
+          <Field.Root w="auto">
             <Field.Label fontSize="md">Include in results</Field.Label>
           </Field.Root>
-          <VStack>
+          <VStack flex="1 1 180px" minW="0">
             <Input
               size="lg"
               placeholder="Find these keywords/phrases while searching"
@@ -56,11 +56,11 @@ const SearchTextFilter = ({ searchTextObj, setSearchText }) => {
             />
           </VStack>
         </Flex>
-        <Flex gap={2} flexDir="column" justifyContent="space-between" w="100%">
-          <Field.Root>
+        <Flex gap={2} flexDir="row" flexWrap="wrap" alignItems="center" justifyContent="space-between" w="100%">
+          <Field.Root w="auto">
             <Field.Label fontSize="md">Exclude from results</Field.Label>
           </Field.Root>
-          <VStack>
+          <VStack flex="1 1 180px" minW="0">
             <Input
               size="lg"
               placeholder="Avoid these keywords/phrases while searching"
@@ -79,12 +79,13 @@ const SearchTextFilter = ({ searchTextObj, setSearchText }) => {
         </Flex>
         <Flex
           gap={2}
-          flexDir="column"
-          align="start"
+          flexDir="row"
+          flexWrap="wrap"
+          alignItems="center"
           justifyContent="space-between"
           w="100%"
         >
-          <Field.Root>
+          <Field.Root w="auto">
             <Field.Label fontSize="md">Limit
             <Tooltip
               content="Number of matches to return - Leave empty to return all of them"
@@ -98,7 +99,7 @@ const SearchTextFilter = ({ searchTextObj, setSearchText }) => {
               </Icon>
             </Tooltip></Field.Label>
           </Field.Root>
-          <VStack>
+          <VStack flex="1 1 120px" minW="0" align="start">
             <NumberInput.Root
               size="lg"
               w="fit"

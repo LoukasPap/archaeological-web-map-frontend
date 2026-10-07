@@ -1,11 +1,17 @@
-import { Stack, IconButton } from "@chakra-ui/react";
+import { Stack, IconButton, Box } from "@chakra-ui/react";
 import { LuSquareCheck, LuSquareMinus } from "react-icons/lu";
+
+// Labels are hidden (icon-only buttons) where the accordion header is too narrow.
+const labelDisplay = { base: "none", "2xl": "inline" };
 
 export const QuickSelectButton = ({ onClick }) => {
   return (
     <IconButton
+      aria-label="Select all"
+      title="Select all"
       size="2xl"
       w="fit"
+      minW="auto"
       h="fit"
       variant="plain"
       // Disable event bubbling to not trigger accordion expansion/contraction
@@ -19,7 +25,9 @@ export const QuickSelectButton = ({ onClick }) => {
       gap={1}
     >
       <LuSquareCheck />
-      Select all
+      <Box as="span" display={labelDisplay}>
+        Select all
+      </Box>
     </IconButton>
   );
 };
@@ -27,8 +35,11 @@ export const QuickSelectButton = ({ onClick }) => {
 export const QuickClearButton = ({ onClick }) => {
   return (
     <IconButton
-      size="2xl" display={{ smToXl: "none"}}
+      aria-label="Clear"
+      title="Clear"
+      size="2xl"
       w="fit"
+      minW="auto"
       h="fit"
       variant="plain"
       onClick={(e) => {
@@ -40,7 +51,10 @@ export const QuickClearButton = ({ onClick }) => {
       fontSize="md"
       gap={1}
     >
-      <LuSquareMinus size={"xl"} /> Clear
+      <LuSquareMinus size={"xl"} />
+      <Box as="span" display={labelDisplay}>
+        Clear
+      </Box>
     </IconButton>
   );
 };
@@ -48,7 +62,6 @@ export const QuickClearButton = ({ onClick }) => {
 const QuickSelectionButtons = ({ handleSelectAll, handleClearAll }) => {
   return (
     <Stack
-      display={{ smToXl: "none", "2xl": "flex" }}
       direction="row"
       justifyContent="space-around"
       gap={0}

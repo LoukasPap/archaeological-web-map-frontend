@@ -13,13 +13,16 @@ const PeriodFilterButton = ({
     <Button
       key={value}
       variant="subtle"
-      h="fit"
+      h="auto"
       overflow="hidden"
       border="1px solid"
       borderColor="gray.300"
       rounded="md"
       onClick={onClick}
       justifyContent="start"
+      px="2"
+      whiteSpace="normal"
+      textAlign="start"
       _hover={{ bg: "gray.200" }}
     >
       <HStack align="center" gap={0} >
@@ -37,10 +40,10 @@ const PeriodFilterButton = ({
           align={"flex-start"}
           zIndex={1}
           gap={1}
-          p="2"
+          p="1.5"
         >
           <Text
-            fontSize={{ lg: "lg", md: "sm" }}
+            fontSize="sm"
             fontWeight="normal"
             color="gray.950"
             transition="color 0.3s ease"
@@ -48,7 +51,7 @@ const PeriodFilterButton = ({
             {title}
           </Text>
           <Text
-            fontSize={{ lg: "md", md: "xs" }}
+            fontSize="xs"
             fontWeight="normal"
             color="gray.600"
             transition="color 0.3s ease"

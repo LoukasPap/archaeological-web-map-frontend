@@ -53,12 +53,11 @@ const Monument = ({ setMonumentObj, clear }) => {
   return (
     <Stack mb="5" w="100%">
       <Field.Root
-        orientation={{
-          smToXl: "vertical",
-          "2xl": "horizontal",
-        }}
+        flexDirection="row"
+        flexWrap="wrap"
+        alignItems="center"
         justifyContent="space-between"
-        gap={5}
+        gap={3}
       >
         <Field.Label fontSize="md">
           <Text w="fit">View options</Text>
@@ -73,7 +72,8 @@ const Monument = ({ setMonumentObj, clear }) => {
             }));
           }}
           size={{ smToMd: "lg", lg: "xl" }}
-          flex="1"
+          flex="1 1 180px"
+          minW="0"
           border="1px solid"
           borderColor="gray.300"
         >
@@ -88,16 +88,18 @@ const Monument = ({ setMonumentObj, clear }) => {
       </Field.Root>
 
       <Field.Root
-        orientation={{ smToXl: "vertical", "2xl": "horizontal" }}
-        display="flex"
+        flexDirection="row"
+        flexWrap="wrap"
+        alignItems="center"
         justifyContent="space-between"
-        gap={5}
+        gap={3}
       >
         <Field.Label fontSize="md" flexGrow={0}>
           <Text w="fit">Condition</Text>
         </Field.Label>{" "}
         <Select.Root
-          flex="1"
+          flex="1 1 180px"
+          minW="0"
           value={monuments.Condition}
           onValueChange={(e) => {
             setMonuments((m) => ({

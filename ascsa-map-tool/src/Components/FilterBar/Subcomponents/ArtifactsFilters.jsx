@@ -197,7 +197,8 @@ const ArtifactsFilters = ({ setArtifactsFilters, cleanFilters }) => {
         setOpenItems(e.value);
       }}
       value={openItems}
-      overflow={"auto"}
+      overflow="visible"
+      flexShrink={0}
     >
       <Accordion.Item value="text-search-filter" bg="white">
         <Accordion.ItemTrigger justifyContent="space-between">
@@ -231,7 +232,7 @@ const ArtifactsFilters = ({ setArtifactsFilters, cleanFilters }) => {
         <Accordion.ItemContent>
           <SimpleGrid
             gap="2"
-            columns={{ "2xlDown": 1, "2xl": 2 }}
+            columns={2}
             h="fit"
             mb="5"
           >
@@ -269,7 +270,7 @@ const ArtifactsFilters = ({ setArtifactsFilters, cleanFilters }) => {
           <SimpleGrid
             mb="5"
             gap="2"
-            columns={{ smToXl: 4, md: 2, "2xl": 4 }}
+            minChildWidth="52px"
             h="fit"
           >
             <For each={inventoryLetterList}>
