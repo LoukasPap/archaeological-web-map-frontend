@@ -607,7 +607,8 @@ const MapLayer = () => {
 
         <ZoomTracker />
         <ScaleControl position="bottomleft" />
-        <ZoomControl position="bottomright" />
+        {/* On mobile the action bar covers the bottom-right corner */}
+        <ZoomControl key={isMobile ? "m" : "d"} position={isMobile ? "bottomleft" : "bottomright"} />
 
         <SectionsLayer
           sectionImages={sectionImages}
