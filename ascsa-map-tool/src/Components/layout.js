@@ -10,7 +10,7 @@ export const CARD_WIDTH = {
 };
 
 // Distance from the top of the left column to the cards (just below the EasyButtons bar).
-export const CARD_TOP = { base: "52px", md: "calc(3.5vh + 5px)" };
+export const CARD_TOP = { base: "44px", md: "calc(3.5vh + 5px)" };
 
 // Height of the EasyButtons bar.
-export const EASY_BUTTONS_HEIGHT = { base: "44px", md: "3.5vh" };
+export const EASY_BUTTONS_HEIGHT = { base: "36px", md: "3.5vh" };

@@ -21,7 +21,7 @@ const EasyButtons = ({ openUserCard }) => {
   const curOpenCardRef = useRef(NONE);
 
   const isMobile = useIsMobile();
-  const customStyle = { height: isMobile ? "1.15em" : "1.5em" };
+  const customStyle = { height: isMobile ? "1.1em" : "1.5em" };
 
   return (
     <HStack w="100%" h={EASY_BUTTONS_HEIGHT} gap="5px" pointerEvents="auto" display="flex">
@@ -45,9 +45,9 @@ const EasyButtons = ({ openUserCard }) => {
           cursor="pointer"
           w="fit"
           minW={{ base: 0, md: "6.5em" }}
-          flexDirection={{ base: "column", md: "row" }}
+          flexDirection="row"
           justifyContent="center"
-          gap={{ base: 0, md: 2 }}
+          gap={{ base: 1, md: 2 }}
           checked={filterClosed}
           onCheckedChange={(e) => {
             setFilterClosed(!!e.checked);
@@ -74,7 +74,7 @@ const EasyButtons = ({ openUserCard }) => {
               style={customStyle}
             />
           </Checkbox.Control>
-          <Checkbox.Label w="full" textAlign="center" fontSize={{ base: "2xs", md: "lg" }} px="1">
+          <Checkbox.Label w={{ base: "auto", md: "full" }} textAlign="center" fontSize={{ base: "xs", md: "lg" }} px={{ base: 0, md: "1" }}>
             Filters
           </Checkbox.Label>
         </Checkbox.Root>
@@ -96,9 +96,9 @@ const EasyButtons = ({ openUserCard }) => {
           id="collection"
           w="fit"
           minW={{ base: 0, md: "6.5em" }}
-          flexDirection={{ base: "column", md: "row" }}
+          flexDirection="row"
           justifyContent="center"
-          gap={{ base: 0, md: 2 }}
+          gap={{ base: 1, md: 2 }}
           checked={collectionsClosed}
           onCheckedChange={(e) => {
             setCollectionsClosed(!!e.checked);
@@ -127,10 +127,10 @@ const EasyButtons = ({ openUserCard }) => {
           </Checkbox.Control>
           <Checkbox.Label
             cursor="pointer"
-            w="full"
+            w={{ base: "auto", md: "full" }}
             textAlign="center"
-            fontSize={{ base: "2xs", md: "lg" }}
-            pe="1"
+            fontSize={{ base: "xs", md: "lg" }}
+            pe={{ base: 0, md: "1" }}
           >
             Collections
           </Checkbox.Label>
@@ -153,9 +153,9 @@ const EasyButtons = ({ openUserCard }) => {
           id="layers"
           w="fit"
           minW={{ base: 0, md: "6.5em" }}
-          flexDirection={{ base: "column", md: "row" }}
+          flexDirection="row"
           justifyContent="center"
-          gap={{ base: 0, md: 2 }}
+          gap={{ base: 1, md: 2 }}
           checked={layersClosed}
           onCheckedChange={(e) => {
             setLayersClosed(!!e.checked);
@@ -184,10 +184,10 @@ const EasyButtons = ({ openUserCard }) => {
           </Checkbox.Control>
           <Checkbox.Label
             cursor="pointer"
-            w="full"
+            w={{ base: "auto", md: "full" }}
             textAlign="center"
-            fontSize={{ base: "2xs", md: "lg" }}
-            pe="1"
+            fontSize={{ base: "xs", md: "lg" }}
+            pe={{ base: 0, md: "1" }}
           >
             Layers
           </Checkbox.Label>
