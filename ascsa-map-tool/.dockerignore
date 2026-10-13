@@ -1,0 +1,17 @@
+node_modules
+dist
+dist-ssr
+
+# Local env files must not influence the container build
+.env
+.env.*
+
+.git
+.gitignore
+.vercel
+.vscode
+.idea
+
+Dockerfile
+.dockerignore
+README.md
