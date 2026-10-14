@@ -1,4 +1,4 @@
-import { Box } from "@chakra-ui/react";
+import { Fragment } from "react";
 import { ImageOverlay } from "react-leaflet/ImageOverlay";
 import { Marker } from "react-leaflet/Marker";
 
@@ -17,14 +17,14 @@ const SectionsLayer = ({ sectionImages = [], areTitlesEnabled }) => {
     <>
       {sectionImages
         .filter((a) => a.Checked)
-        .sort((a, b) => -b.Order + a.Order)
-        .map((section, key) => (
-          <Box zIndex={key}>
+        .map((section) => (
+          <Fragment key={section.Name}>
+            {/* ZIndex is set by the layer card's "Active Layers" order */}
             <ImageOverlay
-              key={section.Name}
               url={`./AgoraImages/${section.Path}${section.Title}.jpg`}
               bounds={section.WGS84Bounds}
               opacity={1}
+              zIndex={section.ZIndex}
             />
 
             {areTitlesEnabled && (
@@ -35,7 +35,7 @@ const SectionsLayer = ({ sectionImages = [], areTitlesEnabled }) => {
                 textMarker={true}
               />
             )}
-          </Box>
+          </Fragment>
         ))}
     </>
   );

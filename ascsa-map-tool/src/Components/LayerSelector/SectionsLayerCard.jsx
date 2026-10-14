@@ -2,8 +2,8 @@ import { Text, Card, Accordion, Heading, For, Group } from "@chakra-ui/react";
 
 import { CheckboxCard } from "../ui/checkbox-card";
 import { Switch } from "../ui/switch";
-import { useState, useEffect } from "react";
-import SectionsLayer from "./SectionsLayer";
+import { useState, useEffect, useMemo } from "react";
+import ActiveLayersList from "./ActiveLayersList";
 import { LuAArrowDown } from "react-icons/lu";
 
 import { CARD_WIDTH, CARD_TOP } from "../layout";
@@ -25,6 +25,8 @@ const SectionsLayerCard = ({ areLayersOpen, setImages, toggleTitles }) => {
   const [openItems, setOpenItems] = useState([]);
   const [sectionImages, setSectionImages] = useState([]);
   const [checked, setChecked] = useState(true);
+  // Names of the enabled layers, top-most first
+  const [stack, setStack] = useState([]);
 
   useEffect(() => {
     fetch("/sections.json")
@@ -32,13 +34,48 @@ const SectionsLayerCard = ({ areLayersOpen, setImages, toggleTitles }) => {
         if (!res.ok) throw new Error(res.statusText);
         return res.json();
       })
-      .then(setSectionImages)
+      .then((data) => {
+        setSectionImages(data);
+        setStack(
+          data
+            .filter((s) => s.Checked)
+            .sort((a, b) => b.Order - a.Order)
+            .map((s) => s.Name)
+        );
+      })
       .catch((err) => console.error("Failed to load JSON:", err));
   }, []);
 
+  // The map draws each layer with its ZIndex: the first in the stack is highest
+  const images = useMemo(
+    () =>
+      sectionImages.map((img) => {
+        const position = stack.indexOf(img.Name);
+        return { ...img, ZIndex: position === -1 ? 0 : stack.length - position };
+      }),
+    [sectionImages, stack]
+  );
+
   useEffect(() => {
-    setImages(sectionImages);
-  }, [sectionImages]);
+    setImages(images);
+  }, [images]);
+
+  const toggleLayer = (name) => {
+    const isOn = stack.includes(name);
+    setSectionImages((prev) =>
+      prev.map((img) =>
+        img.Name === name ? { ...img, Checked: !isOn } : img
+      )
+    );
+    // A newly enabled layer goes on top
+    setStack((prev) =>
+      isOn ? prev.filter((n) => n !== name) : [name, ...prev]
+    );
+  };
+
+  const activeLayers = stack
+    .map((name) => sectionImages.find((img) => img.Name === name))
+    .filter(Boolean);
 
   return (
     <Card.Root
@@ -82,6 +119,12 @@ const SectionsLayerCard = ({ areLayersOpen, setImages, toggleTitles }) => {
           />
           <Text>Titles {checked ? "Enabled" : "Disabled"}</Text>
         </Group>
+
+        <ActiveLayersList
+          layers={activeLayers}
+          onReorder={setStack}
+          onRemove={toggleLayer}
+        />
 
         <Accordion.Root
           multiple
@@ -130,18 +173,8 @@ const SectionsLayerCard = ({ areLayersOpen, setImages, toggleTitles }) => {
                         label={sec.Title}
                         description={sec.Date}
                         mb={5}
-                        onChange={() => {
-                          setSectionImages((prev) =>
-                            prev.map((img) =>
-                              img.Name === sec.Name
-                                ? {
-                                    ...img,
-                                    Checked: !img.Checked,
-                                  }
-                                : img
-                            )
-                          );
-                        }}
+                        checked={!!sec.Checked}
+                        onChange={() => toggleLayer(sec.Name)}
                       >
                         {sec.Title}
                       </CheckboxCard>
