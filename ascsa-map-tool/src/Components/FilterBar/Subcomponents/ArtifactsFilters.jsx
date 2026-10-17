@@ -5,6 +5,7 @@ import {
   Accordion,
   Group,
   Icon,
+  Flex,
 } from "@chakra-ui/react";
 import QuickSelectionButtons, {
   QuickClearButton,
@@ -19,6 +20,33 @@ import PeriodFilterButton from "./PeriodFilterButton";
 import SearchTextFilter from "./SearchTextFilter";
 
 import usePrevious from "../../../CustomHooks/usePrevious"
+
+// Accordion header with action buttons. The buttons sit beside the trigger, not
+// inside it, because a <button> cannot contain another <button>. The indicator is
+// outside the trigger too, so it toggles the item through onToggle.
+const FilterHeader = ({ title, actions, onToggle }) => (
+  <Flex align="stretch">
+    <Accordion.ItemTrigger flex="1" minW="0" pe="2">
+      <Heading fontWeight={"normal"} fontSize="md">
+        {title}
+      </Heading>
+    </Accordion.ItemTrigger>
+    <Flex align="center" py="10px">
+      {actions}
+    </Flex>
+    <Flex
+      align="center"
+      ps="2"
+      pe="18px"
+      fontSize="lg"
+      cursor="pointer"
+      aria-hidden="true"
+      onClick={onToggle}
+    >
+      <Accordion.ItemIndicator color={"gray.400"} />
+    </Flex>
+  </Flex>
+);
 
 const initialInventoryList = [
   { title: "A",  value: "A",  fullTitle: "Architecture", color: "#000", checked: false },
@@ -184,6 +212,11 @@ const ArtifactsFilters = ({ setArtifactsFilters, cleanFilters }) => {
     });
   }, [searchTextFilter, periodList, inventoryLetterList, section, monument]);
 
+  const toggleItem = (value) =>
+    setOpenItems((prev) =>
+      prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value]
+    );
+
   return (
     <Accordion.Root
       multiple
@@ -201,15 +234,13 @@ const ArtifactsFilters = ({ setArtifactsFilters, cleanFilters }) => {
       flexShrink={0}
     >
       <Accordion.Item value="text-search-filter" bg="white">
-        <Accordion.ItemTrigger justifyContent="space-between">
-          <Heading fontWeight={"normal"} fontSize="md">
-            TEXT SEARCH
-          </Heading>
-          <Group>
+        <FilterHeader
+          title="TEXT SEARCH"
+          onToggle={() => toggleItem("text-search-filter")}
+          actions={
             <QuickClearButton onClick={() => handleClearAll("text-search-filter")} />
-            <Accordion.ItemIndicator color={"gray.400"} />
-          </Group>
-        </Accordion.ItemTrigger>
+          }
+        />
 
         <Accordion.ItemContent>
           <SearchTextFilter searchTextObj={searchTextFilter} setSearchText={setSearchTextFilter} />
@@ -217,18 +248,16 @@ const ArtifactsFilters = ({ setArtifactsFilters, cleanFilters }) => {
       </Accordion.Item>
 
       <Accordion.Item value="period-filter" bg="white">
-        <Accordion.ItemTrigger justifyContent="space-between">
-          <Heading fontWeight={"normal"} fontSize="md">
-            PERIODS
-          </Heading>
-          <Group>
+        <FilterHeader
+          title="PERIODS"
+          onToggle={() => toggleItem("period-filter")}
+          actions={
             <QuickSelectionButtons
               handleSelectAll={() => handleSelectAll("period-filter")}
               handleClearAll={() => handleClearAll("period-filter")}
             />
-            <Accordion.ItemIndicator color={"gray.400"} />
-          </Group>
-        </Accordion.ItemTrigger>
+          }
+        />
         <Accordion.ItemContent>
           <SimpleGrid
             gap="2"
@@ -253,18 +282,16 @@ const ArtifactsFilters = ({ setArtifactsFilters, cleanFilters }) => {
       </Accordion.Item>
 
       <Accordion.Item value="inventory-filter" bg="white">
-        <Accordion.ItemTrigger justifyContent="space-between">
-          <Heading fontWeight={"normal"} fontSize="md">
-            INVENTORY LETTERS
-          </Heading>
-          <Group>
+        <FilterHeader
+          title="INVENTORY LETTERS"
+          onToggle={() => toggleItem("inventory-filter")}
+          actions={
             <QuickSelectionButtons
               handleSelectAll={() => handleSelectAll("inventory-filter")}
               handleClearAll={() => handleClearAll("inventory-filter")}
             />
-            <Accordion.ItemIndicator color={"gray.400"} />
-          </Group>
-        </Accordion.ItemTrigger>
+          }
+        />
 
         <Accordion.ItemContent>
           <SimpleGrid
@@ -276,6 +303,7 @@ const ArtifactsFilters = ({ setArtifactsFilters, cleanFilters }) => {
             <For each={inventoryLetterList}>
               {(m) => (
                 <InventoryFilterButton
+                  key={m.value}
                   inventoryObject={m}
                   onClick={() => selectInventoryLetter(m.value)}
                 />
@@ -286,15 +314,11 @@ const ArtifactsFilters = ({ setArtifactsFilters, cleanFilters }) => {
       </Accordion.Item>
 
       <Accordion.Item value="section-filter" bg="white">
-        <Accordion.ItemTrigger justifyContent="space-between">
-          <Heading fontWeight={"normal"} fontSize="md">
-            SECTION
-          </Heading>
-          <Group>
-            <QuickClearButton onClick={clearSectionInput} />
-            <Accordion.ItemIndicator color={"gray.400"} />
-          </Group>
-        </Accordion.ItemTrigger>
+        <FilterHeader
+          title="SECTION"
+          onToggle={() => toggleItem("section-filter")}
+          actions={<QuickClearButton onClick={clearSectionInput} />}
+        />
 
         <Accordion.ItemContent>
           <Section sectionObj={section} setSectionObj={setSection} />

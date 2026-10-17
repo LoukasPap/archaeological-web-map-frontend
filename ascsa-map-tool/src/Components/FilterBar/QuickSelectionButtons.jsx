@@ -51,7 +51,7 @@ export const QuickClearButton = ({ onClick }) => {
       fontSize="md"
       gap={1}
     >
-      <LuSquareMinus size={"xl"} />
+      <LuSquareMinus />
       <Box as="span" display={labelDisplay}>
         Clear
       </Box>
